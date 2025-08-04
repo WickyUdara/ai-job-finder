@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pymongo
+python-dotenv
+pydantic
+spacy
+python-docx
+PyPDF2
+openai
+requests
+beautifulsoup4
