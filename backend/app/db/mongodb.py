@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 import os
 
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+# For local dev, set fallback URI here or use .env
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
 
 client = MongoClient(MONGO_URI)
 db = client["job_finder"]

@@ -9,3 +9,7 @@ PyPDF2
 openai
 requests
 beautifulsoup4
+python-multipart
+pdfplumber
+google-genai
+openai
