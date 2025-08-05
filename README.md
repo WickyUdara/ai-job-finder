@@ -64,3 +64,4 @@ job_finder/
 
 ## requirements.txt (Backend)
 
+gemini 2.5 flash for OCR
