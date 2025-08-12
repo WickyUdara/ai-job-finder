@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
 from app.services.matching import match_jobs, extract_skills_from_cv
 from app.services.arbeitnow_fetcher import fetch_arbeitnow_jobs
-
-
+from app.db.mongodb import cv_collection
+from bson import ObjectId
 router = APIRouter()
 
 @router.get("/jobs/arbeitnow")
