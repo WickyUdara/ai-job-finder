@@ -12,4 +12,8 @@ beautifulsoup4
 python-multipart
 pdfplumber
 google-genai
-openai
+selenium
+webdriver-manager
+crawl4ai
+playwright
+urllib3<2.0.0
