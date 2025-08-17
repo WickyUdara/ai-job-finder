@@ -50,7 +50,7 @@ pip install -r requirements.txt
 # 3. Create backend/.env from .env.example and set values
 
 # 4. Run the server
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload  
 
 ----
 

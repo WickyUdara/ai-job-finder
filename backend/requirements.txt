@@ -2,6 +2,7 @@ fastapi
 uvicorn
 pymongo
 python-dotenv
+python-multipart
 pydantic
 requests
 beautifulsoup4
