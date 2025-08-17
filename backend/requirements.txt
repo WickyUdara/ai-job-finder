@@ -13,3 +13,4 @@ passlib[bcrypt]
 sentence-transformers
 faiss-cpu
 pytest
+google-genai
