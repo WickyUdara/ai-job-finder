@@ -1,0 +1,1 @@
+# Gemini client wrappers (OCR, IE, chat, critique)

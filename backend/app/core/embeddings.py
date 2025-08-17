@@ -1,0 +1,1 @@
+# embedding logic (Gemini or fallback)
