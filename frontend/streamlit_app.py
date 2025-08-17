@@ -47,3 +47,45 @@ if st.session_state.cv_id:
         st.error(f"Request error: {e}")
 else:
     st.info("Upload a CV to see extracted text")
+
+
+st.markdown("---")
+st.subheader("Ask questions about your CV")
+
+if st.session_state.cv_id:
+    chat_history = st.session_state.get("chat_history", [])
+
+    user_msg = st.text_input("Your question:")
+    
+    if st.button("Send Question") and user_msg:
+        resp = requests.post(
+            f"{BACKEND}/cv/{st.session_state.cv_id}/chat", json={"message": user_msg}, timeout=60
+        )
+        if resp.ok:
+            data = resp.json()
+            reply = data.get("reply", "")
+            messages = data.get("messages", [])
+            st.session_state["chat_history"] = messages
+
+            st.markdown(f"**You:** {user_msg}")
+            st.markdown(f"**Bot:** {reply}")
+        else:
+            st.error(f"Chat failed: {resp.text}")
+    # Show previous chat
+    for m in chat_history[-5:]:
+        st.write(f"[{m['role'].capitalize()}]: {m['content']}")
+
+else:
+    st.info("Upload a CV to enable chat.")
+
+st.markdown("---")
+st.subheader("Extract structured CV info")
+
+if st.session_state.cv_id:
+    if st.button("Extract Key Features"):
+        resp = requests.post(f"{BACKEND}/cv/{st.session_state.cv_id}/structure", timeout=60)
+        if resp.ok:
+            fields = resp.json()
+            st.json(fields)
+        else:
+            st.error(f"Extraction failed: {resp.text}")
