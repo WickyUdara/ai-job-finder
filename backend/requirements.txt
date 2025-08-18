@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pymongo
+python-dotenv
+python-multipart
+pydantic
+requests
+beautifulsoup4
+pdfplumber
+python-docx
+pyjwt
+passlib[bcrypt]
+sentence-transformers
+faiss-cpu
+pytest
+google-genai
