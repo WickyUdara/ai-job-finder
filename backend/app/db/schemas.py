@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Dict, Any, List, Optional
 
 class CVUploadResponse(BaseModel):
     cv_id: str
@@ -10,3 +11,31 @@ class CVBasicInfo(BaseModel):
     filename: str
     ocr_used: bool
     raw_text_preview: str
+
+class QualityRubric(BaseModel):
+    ats_readiness: Optional[int] = None
+    clarity: Optional[int] = None
+    quantification: Optional[int] = None
+    keyword_coverage: Optional[int] = None
+    structure_formatting: Optional[int] = None
+    consistency: Optional[int] = None
+
+class ImprovementItem(BaseModel):
+    area: str
+    issue: str
+    fix_example: Optional[str] = None
+
+class RewrittenExamples(BaseModel):
+    summary: Optional[str] = None
+    bullets: Optional[List[str]] = None
+
+class QualityReport(BaseModel):
+    score: int
+    rubric: QualityRubric
+    strengths: List[str]
+    improvements: List[ImprovementItem]
+    rewritten_examples: Optional[Any] = None  # Can be dict or list depending on LLM output
+    evaluated_at: Optional[str] = None  # Or use datetime type for more control
+    raw: Optional[str] = None  # For fallback/debug
+
+

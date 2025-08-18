@@ -11,7 +11,7 @@ def extract_structured_fields(cv_text: str) -> dict:
         "Do not add fields not present."
     )
     response = client.models.generate_content(
-        model="gemini-1.5-flash-latest",
+        model="gemini-2.5-flash",
         contents=[cv_text, prompt]
     )
     # Parse Gemini's output as JSON

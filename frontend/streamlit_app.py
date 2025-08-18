@@ -89,3 +89,80 @@ if st.session_state.cv_id:
             st.json(fields)
         else:
             st.error(f"Extraction failed: {resp.text}")
+
+
+def display_quality_report(result):
+    st.success(f"CV Quality Score: {result.get('score', 'N/A')}/100")
+    rubric = result.get('rubric', {})
+    st.write("## Rubric Breakdown")
+    st.json(rubric)
+
+    st.write("## Strengths")
+    strengths = result.get("strengths", [])
+    if strengths:
+        for strength in strengths:
+            st.write(f"- {strength}")
+    else:
+        st.write("No strengths identified.")
+
+    st.write("## Improvements")
+    improvements = result.get("improvements", [])
+    if improvements:
+        for imp in improvements:
+            area = imp.get('area', '')
+            issue = imp.get('issue', '')
+            fix_example = imp.get('fix_example', '')
+            st.write(f"- **{area}:** {issue} (Fix: {fix_example})")
+            st.write("")  # Add extra spacing
+    else:
+        st.write("No improvements suggested.")
+
+    if "rewritten_examples" in result:
+        st.write("## Rewritten Examples")
+        st.json(result["rewritten_examples"])
+
+
+st.markdown("---")
+st.subheader("CV Quality Evaluation and Recommendations")
+
+if st.session_state.get("cv_id"):
+    if st.button("Evaluate CV Quality"):
+        with st.spinner("Evaluating CV quality..."):
+            try:
+                resp = requests.post(
+                    f"{BACKEND}/cv/{st.session_state.cv_id}/quality/evaluate", timeout=120
+                )
+                if resp.ok:
+                    result = resp.json()
+                    display_quality_report(result)
+                else:
+                    st.error(f"Quality evaluation failed: {resp.status_code} {resp.text}")
+            except Exception as e:
+                st.error(f"Request failed: {e}")
+
+    st.write("### Last Quality Report")
+    try:
+        resp2 = requests.get(
+            f"{BACKEND}/cv/{st.session_state.cv_id}/quality", timeout=60
+        )
+        if resp2.ok:
+            result = resp2.json()
+            st.info(f"Previous CV Quality Score: {result.get('score', 'N/A')}/100")
+            display_quality_report(result)
+        else:
+            st.write("No previous report found.")
+
+        if resp.ok:
+            result = resp.json()
+            if "raw" in result:
+                st.error("Received unparsable JSON from backend. Raw output:")
+                st.text_area("Raw Gemini output", result["raw"], height=400)
+            else:
+                display_quality_report(result)
+        else:
+            st.error(f"Quality evaluation failed: {resp.status_code} {resp.text}")
+
+    except Exception as e:
+        st.write(f"Could not retrieve previous report: {e}")
+else:
+    st.info("Upload a CV first to evaluate its quality.")
