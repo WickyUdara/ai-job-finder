@@ -6,3 +6,4 @@ db = client[DATABASE_NAME]
 
 # Collections
 cvs = db["cvs"]
+jobs = db["jobs"]

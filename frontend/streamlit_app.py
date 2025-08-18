@@ -107,11 +107,6 @@ def display_quality_report(result):
     with st.expander("Strengths", expanded=True):
         for strength in result.get("strengths", []):
             st.write(f"- {strength}")
-    # if strengths:
-    #     for strength in strengths:
-    #         st.write(f"- {strength}")
-    # else:
-    #     st.write("No strengths identified.")
 
     st.write("## Improvements")
     improvements = result.get("improvements", [])
@@ -224,3 +219,51 @@ if st.session_state.get("cv_id"):
             file_name=f"cv_quality_report_{st.session_state.cv_id}.txt",
             mime="text/plain"
         )
+
+
+
+st.markdown("---")
+st.subheader("Job Dataset Management")
+
+with st.expander("Add a new job to dataset"):
+    job_title = st.text_input("Job Title")
+    job_desc = st.text_area("Job Description")
+    job_reqs = st.text_area("Requirements (comma separated)")
+    job_skills = st.text_area("Skills (comma separated)")
+    job_employer = st.text_input("Employer")
+    job_location = st.text_input("Location")
+    if st.button("Upload Job"):
+        job_data = {
+            "title": job_title,
+            "description": job_desc,
+            "requirements": [r.strip() for r in job_reqs.split(",") if r.strip()],
+            "skills": [s.strip() for s in job_skills.split(",") if s.strip()],
+            "employer": job_employer,
+            "location": job_location
+        }
+        r = requests.post(f"{BACKEND}/job/upload", json=job_data)
+        if r.ok:
+            st.success(f"Job uploaded: {r.json()['title']}")
+        else:
+            st.error(r.text)
+
+st.subheader("All Jobs in Dataset")
+r2 = requests.get(f"{BACKEND}/job/list")
+if r2.ok:
+    jobs_list = r2.json()
+    for job in jobs_list:
+        st.write(f"- {job['title']} ({job.get('location','')})")
+
+st.markdown("---")
+st.subheader("Job Matching for Your CV")
+if st.session_state.get("cv_id"):
+    if st.button("Find Best Jobs for My CV"):
+        r3 = requests.get(f"{BACKEND}/job/match/{st.session_state.cv_id}")
+        if r3.ok:
+            st.write("Top Matches:")
+            for match in r3.json():
+                st.write(f"- {match['title']} (Score: {match['score']:.3f})")
+        else:
+            st.error(r3.text)
+else:
+    st.info("Upload and evaluate a CV, then match to jobs!")

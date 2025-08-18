@@ -39,3 +39,19 @@ class QualityReport(BaseModel):
     raw: Optional[str] = None  # For fallback/debug
 
 
+class Job(BaseModel):
+    job_id: Optional[str]
+    title: str
+    description: str
+    requirements: List[str]
+    skills: List[str]
+    employer: Optional[str] = None
+    location: Optional[str] = None
+    embedding: Optional[List[float]] = None  # LLM job vector
+
+class JobMatchResult(BaseModel):
+    job_id: str
+    title: str
+    score: float
+    why: Optional[str]
+
