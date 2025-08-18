@@ -1,14 +1,16 @@
 import streamlit as st
 import requests
 import os
+import io
+import json
 
 BACKEND = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="CV Intelligence - Phase 1", page_icon="📄", layout="wide")
 st.title("CV Intelligence Platform — Phase 1 (Upload & Extraction)")
 
-with st.expander("Backend settings", expanded=False):
-    st.write(f"Backend URL: {BACKEND}")
+# with st.expander("Backend settings", expanded=False):
+#     st.write(f"Backend URL: {BACKEND}")
 
 st.subheader("Upload CV (PDF/DOCX)")
 uploaded = st.file_uploader("Choose your CV file", type=["pdf", "docx"])
@@ -92,30 +94,31 @@ if st.session_state.cv_id:
 
 
 def display_quality_report(result):
+    
     st.success(f"CV Quality Score: {result.get('score', 'N/A')}/100")
     rubric = result.get('rubric', {})
     st.write("## Rubric Breakdown")
     st.json(rubric)
 
+    
+
     st.write("## Strengths")
     strengths = result.get("strengths", [])
-    if strengths:
-        for strength in strengths:
+    with st.expander("Strengths", expanded=True):
+        for strength in result.get("strengths", []):
             st.write(f"- {strength}")
-    else:
-        st.write("No strengths identified.")
+    # if strengths:
+    #     for strength in strengths:
+    #         st.write(f"- {strength}")
+    # else:
+    #     st.write("No strengths identified.")
 
     st.write("## Improvements")
     improvements = result.get("improvements", [])
-    if improvements:
-        for imp in improvements:
-            area = imp.get('area', '')
-            issue = imp.get('issue', '')
-            fix_example = imp.get('fix_example', '')
-            st.write(f"- **{area}:** {issue} (Fix: {fix_example})")
-            st.write("")  # Add extra spacing
-    else:
-        st.write("No improvements suggested.")
+    with st.expander("Improvements", expanded=True):
+        for imp in result.get("improvements", []):
+            st.write(f"- {imp.get('area', '')}: {imp.get('issue', '')} (Fix: {imp.get('fix_example', '')})")
+
 
     if "rewritten_examples" in result:
         st.write("## Rewritten Examples")
@@ -166,3 +169,58 @@ if st.session_state.get("cv_id"):
         st.write(f"Could not retrieve previous report: {e}")
 else:
     st.info("Upload a CV first to evaluate its quality.")
+
+
+if st.session_state.get("cv_id"):
+    # After fetching result (ensure it's a dict, not raw)
+    result_for_export = None
+    # Get latest report
+    resp2 = requests.get(
+        f"{BACKEND}/cv/{st.session_state.cv_id}/quality", timeout=60
+    )
+    if resp2.ok:
+        result_for_export = resp2.json()
+        # Download as JSON
+        json_bytes = io.BytesIO(json.dumps(result_for_export, indent=2).encode("utf-8"))
+        st.download_button(
+            label="Download Quality Report (JSON)",
+            data=json_bytes,
+            file_name=f"cv_quality_report_{st.session_state.cv_id}.json",
+            mime="application/json"
+        )
+        # Download as text summary
+        # Create text format report
+        def pretty_report_text(data):
+            text = []
+            text.append(f"CV Quality Score: {data.get('score', 'N/A')}/100")
+            rubric = data.get("rubric", {})
+            text.append("Rubric Breakdown:")
+            for k, v in rubric.items():
+                text.append(f"  - {k}: {v}")
+            text.append("Strengths:")
+            for s in data.get("strengths", []):
+                text.append(f"  - {s}")
+            text.append("Improvements:")
+            for imp in data.get("improvements", []):
+                area = imp.get("area", "")
+                issue = imp.get("issue", "")
+                fix = imp.get("fix_example", "")
+                text.append(f"  - {area}: {issue} (Fix: {fix})")
+            if "rewritten_examples" in data:
+                text.append("Rewritten Examples:")
+                re = data.get("rewritten_examples")
+                if isinstance(re, list):
+                    for ex in re:
+                        text.append(f"  - {ex}")
+                elif isinstance(re, dict):
+                    for k, v in re.items():
+                        text.append(f"  {k}: {v}")
+            return "\n".join(text)
+
+        txt_bytes = io.BytesIO(pretty_report_text(result_for_export).encode("utf-8"))
+        st.download_button(
+            label="Download Quality Report (Text)",
+            data=txt_bytes,
+            file_name=f"cv_quality_report_{st.session_state.cv_id}.txt",
+            mime="text/plain"
+        )
