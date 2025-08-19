@@ -9,7 +9,6 @@ def embed_job_text(title, desc, requirements, skills):
         model="models/text-embedding-004",
         contents=[text]
     )
-    # Correct extraction:
-    return response.embeddings[0].values   # THIS is a list[float], safe for MongoDB!
+    return response.embeddings[0].values   
 
     

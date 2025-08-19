@@ -29,6 +29,8 @@ async def upload_job(data: dict = Body(...)):
     }
     result = jobs.insert_one(job_doc)
     job_doc["job_id"] = str(result.inserted_id)
+    job_doc.pop("_id", None)
+
     return job_doc
 
 @router.get("/list")
@@ -36,7 +38,7 @@ async def list_jobs():
     job_list = []
     for job in jobs.find({}):
         job["job_id"] = str(job["_id"])
-        job.pop("_id")
+        job.pop("_id",None)
         job_list.append(job)
     return job_list
 

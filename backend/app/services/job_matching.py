@@ -1,8 +1,11 @@
 from app.db.mongodb import cvs, jobs
 from scipy.spatial import distance
+from bson import ObjectId
 
 def get_cv_embedding(cv_id):
     doc = cvs.find_one({"_id": cv_id})
+    if not doc:
+        return None 
     return doc.get("embedding")  # You must run CV embedding similarly as jobs
 
 def match_cv_to_jobs(cv_id, top_k=5):
