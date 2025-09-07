@@ -20,7 +20,7 @@ Currently Streamlit-first for rapid iteration, with a stable API layer to suppor
 - **Backend**: FastAPI (Python)  
 - **Database**: MongoDB (Atlas or local)  
 - **AI**: Gemini (OCR, extraction, chat, critique)  
-- **Vector Search**: MongoDB Atlas Vector Search (preferred) or FAISS fallback  
+- **Vector Search**: MongoDB Atlas Vector Search 
 - **Frontend (dev)**: Streamlit  
 - **Frontend (future)**: React  
 - **Auth**: JWT (access + refresh tokens)  
