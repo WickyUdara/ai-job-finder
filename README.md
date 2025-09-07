@@ -1,4 +1,4 @@
-# 📄 CV Intelligence Platform (Streamlit-first)
+# 📄 CV Intelligence Platform 
 
 An **end-to-end CV Intelligence Platform** for extraction, analysis, and matching.  
 Currently Streamlit-first for rapid iteration, with a stable API layer to support a future React migration.
