@@ -71,19 +71,7 @@ streamlit run streamlit_app.py
 Interactive docs available at:
 👉 http://localhost:8000/docs
 
-## 🧭 Development Phases
 
-- CV upload + OCR extraction
-
-- Chat with CV + structured extraction
-
-- Quality evaluation + improvement suggestions
-
-- Job dataset (1,000 roles) + embeddings + matching
-
-- Admin console (history, job generation, CRUD)
-
-- Migrate UI to React
 
 ## 🔐 Security & Privacy
 
